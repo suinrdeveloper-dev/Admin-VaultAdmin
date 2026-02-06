@@ -31,7 +31,9 @@ class MessageAdapter : ListAdapter<MessageEntity, MessageAdapter.MessageViewHold
             tvAppName.text = message.source_app
             tvHeader.text = message.header
             tvPayload.text = message.payload
-            tvTime.text = message.received_at
+            
+            // ✅ FIX: Entity mein field ka naam 'timestamp' tha, isliye yahan change kiya
+            tvTime.text = message.timestamp 
         }
     }
 
