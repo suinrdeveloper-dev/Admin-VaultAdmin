@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+}
+
+android {
+    namespace 'com.admin.vault.receiver'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.admin.vault.receiver"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        
+        // Unit tests ke liye runner
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // 🔴 MISSING PART 1: Java 17 Support (Bahut Zaruri hai)
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    // 🔴 MISSING PART 2: Duplicate file errors rokne ke liye
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += 'META-INF/INDEX.LIST'
+            excludes += 'META-INF/io.netty.versions.properties'
+        }
+    }
+}
+
+dependencies {
+    // 1. Room Database (Offline Storage)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    // 2. Supabase (Network)
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.0")
+    implementation("io.github.jan-tennert.supabase:realtime-kt:2.5.0")
+    // Ktor Client (Engine fix kiya hai taki crash na ho)
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("io.ktor:ktor-client-core:2.3.12") 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // 3. Lifecycle & UI
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+}
