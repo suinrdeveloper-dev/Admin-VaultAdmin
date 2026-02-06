@@ -14,14 +14,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.admin.vault.receiver.data.AppDatabase
-import com.admin.vault.receiver.ui.MessageAdapter // ✅ Fixed: Correct Import
+import com.admin.vault.receiver.ui.MessageAdapter // ✅ FIX: Correct Import
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
 
 class MainActivity : AppCompatActivity() {
     private val syncManager by lazy { SyncManager(this) }
-    private lateinit var adapter: MessageAdapter // ✅ Fixed: Changed VaultAdapter to MessageAdapter
+    
+    // ✅ FIX: 'VaultAdapter' ko hatakar 'MessageAdapter' kiya
+    private lateinit var adapter: MessageAdapter 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         val recycler = findViewById<RecyclerView>(R.id.recyclerView)
         val search = findViewById<EditText>(R.id.searchBox)
         
-        adapter = MessageAdapter() // ✅ Fixed
+        adapter = MessageAdapter() // ✅ FIX: Initialized correct adapter
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Auto-Sync Loop
+        // Auto-Sync Loop (Vacuum Protocol)
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 syncManager.executeVacuum()
