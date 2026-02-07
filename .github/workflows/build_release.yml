@@ -1,0 +1,34 @@
+name: Build Vault Admin (Release)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # ✅ FIX: Yahan humne version '8.2' fix kar diya hai.
+      # Ab ye Gradle 9.3 use nahi karega, isliye crash nahi hoga.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.2'
+
+      - name: Build Release APK
+        run: gradle assembleRelease --stacktrace --no-daemon
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: vault-admin-release
+          path: app/build/outputs/apk/release/*.apk
