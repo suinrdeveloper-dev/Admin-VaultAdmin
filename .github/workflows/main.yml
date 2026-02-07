@@ -1,41 +1,29 @@
 name: Build Vault Admin (Release)
 
 on:
-  workflow_dispatch: # यह बटन मैन्युअली ट्रिगर करने के लिए है
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. कोड चेकआउट (Code GitHub se lena)
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Java 17 सेटअप (Android 14/Supabase ke liye zaruri)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Gradle सेटअप (Cache ke sath taaki fast ho)
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # 4. Permission Fix (Bahut zaruri step)
-      # Kabhi-kabhi gradlew file ko run karne ki permission nahi hoti, ye use fix karega
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
-
-      # 5. Build Command (RELEASE MODE)
-      # Humne build.gradle me 'minifyEnabled false' aur 'signingConfig debug' set kiya hai
-      # Isliye ye command ab bina error ke chalega.
+      # ✅ FIX: Humne chmod hata diya aur 'gradle' use kiya
       - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace --no-daemon
+        run: gradle assembleRelease --stacktrace --no-daemon
 
-      # 6. Upload Artifact
-      # Bana hua APK GitHub server par upload karega taaki aap download kar saken
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
