@@ -1,5 +1,7 @@
 package com.admin.vault.receiver.ui
 
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +20,12 @@ class MessageAdapter : ListAdapter<MessageEntity, MessageAdapter.MessageViewHold
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        // 🔥 LOUD LOGGING: Agar ye print hua, iska matlab Database aur SyncManager pass hain!
+        // Agar ye print nahi hua, to problem DAO ya Database mein hai.
+        val item = getItem(position)
+        Log.d("VaultUI", "🎨 Binding Row $position: ${item.header}")
+        
+        holder.bind(item)
     }
 
     class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,12 +35,19 @@ class MessageAdapter : ListAdapter<MessageEntity, MessageAdapter.MessageViewHold
         private val tvTime: TextView = itemView.findViewById(R.id.tvTime)
 
         fun bind(message: MessageEntity) {
-            tvAppName.text = message.source_app
-            tvHeader.text = message.header
-            tvPayload.text = message.payload
-            
-            // ✅ FIX: Entity mein field ka naam 'timestamp' tha, isliye yahan change kiya
-            tvTime.text = message.timestamp 
+            // 1. Data Set Karo (Empty string safety ke sath)
+            tvAppName.text = if (message.source_app.isBlank()) "(Unknown App)" else message.source_app
+            tvHeader.text = if (message.header.isBlank()) "(No Header)" else message.header
+            tvPayload.text = if (message.payload.isBlank()) "(Empty Message)" else message.payload
+            tvTime.text = message.timestamp
+
+            // 2. 🛡️ VISIBILITY FORCE CHECK (Debugging ke liye)
+            // Agar XML mein galti se White text hai, to yahan Black force kar rahe hain
+            // Jab sab fix ho jaye to ye lines hata dena
+            tvAppName.setTextColor(Color.BLACK)
+            tvHeader.setTextColor(Color.BLACK)
+            tvPayload.setTextColor(Color.DKGRAY)
+            tvTime.setTextColor(Color.GRAY)
         }
     }
 
