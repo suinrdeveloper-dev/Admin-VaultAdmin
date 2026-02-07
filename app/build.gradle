@@ -1,3 +1,4 @@
+// ✅ FIX 1: 'plugins' chhota hona chahiye (Capital P galat tha)
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -19,23 +20,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // ✅ NEW: Release Build Configuration
+    // ✅ FIX 2: Release Build Config (Debug Key ke sath)
     buildTypes {
         release {
-            // 1. Crash rokne ke liye Minify OFF rakha hai
             minifyEnabled false
             shrinkResources false
-            
-            // 2. Default Proguard Rules (Agar future me minify ON karna ho)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            // 3. IMPORTANT: Release APK ko Debug Key se sign kar rahe hain
-            // Taki GitHub se download karne par "App not installed" ka error na aaye.
             signingConfig signingConfigs.debug
         }
     }
 
-    // Java 17 Support (Supabase ke liye zaruri)
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -44,7 +38,6 @@ android {
         jvmTarget = '17'
     }
 
-    // Duplicate File Fix (Ktor/Coroutines ke liye)
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -59,22 +52,29 @@ android {
     }
 }
 
+// ✅ FIX 3: Dependency Conflict Solver (Ye Error 1 ko rokega)
+configurations.all {
+    resolutionStrategy {
+        preferProjectModules()
+    }
+}
+
 dependencies {
-    // 1. Room Database (Offline Storage)
+    // 1. Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // 2. Supabase (Network)
+    // 2. Supabase
     implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.0")
     implementation("io.github.jan-tennert.supabase:realtime-kt:2.5.0")
     
-    // Ktor Client (Fixed Engine)
+    // Ktor Client
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("io.ktor:ktor-client-core:2.3.12") 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-    // 3. Lifecycle & UI
+    // 3. UI Libraries
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation 'androidx.appcompat:appcompat:1.6.1'
