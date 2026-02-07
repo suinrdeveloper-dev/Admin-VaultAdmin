@@ -15,12 +15,27 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-        
-        // Unit tests ke liye runner
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // 🔴 MISSING PART 1: Java 17 Support (Bahut Zaruri hai)
+    // ✅ NEW: Release Build Configuration
+    buildTypes {
+        release {
+            // 1. Crash rokne ke liye Minify OFF rakha hai
+            minifyEnabled false
+            shrinkResources false
+            
+            // 2. Default Proguard Rules (Agar future me minify ON karna ho)
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // 3. IMPORTANT: Release APK ko Debug Key se sign kar rahe hain
+            // Taki GitHub se download karne par "App not installed" ka error na aaye.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    // Java 17 Support (Supabase ke liye zaruri)
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -29,12 +44,17 @@ android {
         jvmTarget = '17'
     }
 
-    // 🔴 MISSING PART 2: Duplicate file errors rokne ke liye
+    // Duplicate File Fix (Ktor/Coroutines ke liye)
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
             excludes += 'META-INF/INDEX.LIST'
             excludes += 'META-INF/io.netty.versions.properties'
+            excludes += 'META-INF/DEPENDENCIES'
+            excludes += 'META-INF/LICENSE'
+            excludes += 'META-INF/LICENSE.txt'
+            excludes += 'META-INF/NOTICE'
+            excludes += 'META-INF/NOTICE.txt'
         }
     }
 }
@@ -48,7 +68,8 @@ dependencies {
     // 2. Supabase (Network)
     implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.0")
     implementation("io.github.jan-tennert.supabase:realtime-kt:2.5.0")
-    // Ktor Client (Engine fix kiya hai taki crash na ho)
+    
+    // Ktor Client (Fixed Engine)
     implementation("io.ktor:ktor-client-android:2.3.12")
     implementation("io.ktor:ktor-client-core:2.3.12") 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
